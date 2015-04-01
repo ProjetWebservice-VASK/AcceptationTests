@@ -4,21 +4,25 @@ require 'watir-webdriver'
 browser = Watir::Browser.new :firefox
 
 Soit /^un usager sur l'application web$/ do
-  browser.goto 'http://google.com'
-  browser.text_field(:name => 'q').set("WebDriver rocks!")
-  browser.button(:name => 'btnG').click
+  browser.goto 'file:///Users/Vincent/Workspace/Javascript/Question-Client/index.html'
   puts browser.url
-  browser.close
 end
 
 Lorsque(/^l'usager pose une question au serveur$/) do
-  pending
+  browser.a(:href => '#myModal').click
+  browser.textarea(:id => 'answerText').set('Que suis-je en train de faire ?')
+  browser.button(:id => 'submitNewQuestion').click
 end
 
 Alors(/^le serveur indique qu'il a enregistré la question$/) do
-  pending
+  Watir::Wait.until(5) { browser.div(:class => 'humane').text.include? 'Question enregistrée' }
 end
 
 Et(/^il permet à l'usager de localiser la réponse lorsqu'elle sera disponible$/) do
-  pending
+  browser.div(:id => 'questions')
+    .div(:id => 'accordion')
+    .div(:index => 0)
+    .h4(:class => 'panel-title').text.include? 'Que suis-je en train de faire ?'
+
+  browser.close
 end
