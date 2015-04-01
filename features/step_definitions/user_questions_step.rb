@@ -1,10 +1,18 @@
 require 'cucumber/formatter/unicode' # Pour le support de l'UTF-8 pour Cucumber
 require 'watir-webdriver'
+require 'mongo'
+
+include Mongo
+
+db = MongoClient.new('ds037571.mongolab.com', 37571).db('dev-questions')
+db.authenticate('admin', 'admin')
 
 browser = Watir::Browser.new :firefox
 number_of_questions = 0
 
 Soit /^un usager sur l'application web$/ do
+  db['questions'].remove
+
   browser.goto 'file:///Users/Vincent/Workspace/Javascript/Question-Client/index.html'
   puts browser.url
 
@@ -23,7 +31,7 @@ Lorsque(/^l'usager pose une question au serveur$/) do
 end
 
 Alors(/^le serveur indique qu'il a enregistré la question$/) do
-  Watir::Wait.until(10) { browser.div(:class => 'humane').text.include? 'Probléme' }
+  Watir::Wait.until(10) { browser.div(:class => 'humane').text.include? 'Question enregistrée' }
 end
 
 Et(/^il permet à l'usager de localiser la réponse lorsqu'elle sera disponible$/) do
